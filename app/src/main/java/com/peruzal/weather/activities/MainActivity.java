@@ -3,6 +3,7 @@ package com.peruzal.weather.activities;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -19,13 +20,16 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.peruzal.weather.Constants;
 import com.peruzal.weather.R;
 import com.peruzal.weather.adapters.ForecastAdapter;
+import com.peruzal.weather.helpers.RootUtils;
 import com.peruzal.weather.models.Forecast;
 import com.peruzal.weather.models.ForecastApiResponse;
 import com.peruzal.weather.services.WeatherService;
-import com.peruzal.wther.services.Response;
+import com.peruzal.weather.services.Response;
 import com.squareup.moshi.Moshi;
 
 public class MainActivity extends AppCompatActivity implements ForecastAdapter.OnItemClickListener, Response.Listener {
@@ -40,6 +44,10 @@ public class MainActivity extends AppCompatActivity implements ForecastAdapter.O
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_second);
+
+        // TODO - Show error and not continue
+        Log.d(TAG, "Device is rooted " + RootUtils.isRooted());
+
         this.recyclerView = findViewById(R.id.recyclerView);
         this.loadingindicator = findViewById(R.id.loadingIndicator);
         forecastAdapter = new ForecastAdapter(this);
@@ -71,15 +79,23 @@ public class MainActivity extends AppCompatActivity implements ForecastAdapter.O
         if(requestCode == LOCATION_PERMISSION_REQUEST_CODE && grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
             setUpUserLocation();
         } else {
+            // TODO -  Show Error dialog
             Toast.makeText(this, getString(R.string.location_permission_message), Toast.LENGTH_SHORT).show();
         }
     }
 
     private void setUpUserLocation() {
         this.fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
-        this.fusedLocationProviderClient.getLastLocation()
-                .addOnSuccessListener(this, location -> WeatherService.fetchForecasts(location.getLatitude(), location.getLongitude(),MainActivity.this))
-                .addOnFailureListener(this, exception -> Toast.makeText(MainActivity.this, MainActivity.this.getString(R.string.user_location_not_found), Toast.LENGTH_SHORT).show());
+        this.fusedLocationProviderClient.getLastLocation().addOnSuccessListener(this, location -> {
+            if(location != null){
+                WeatherService.fetchForecasts(location.getLatitude(), location.getLongitude(),MainActivity.this);
+            }
+            // TODO -  Show Error dialog
+            Toast.makeText(MainActivity.this, MainActivity.this.getString(R.string.user_location_not_found), Toast.LENGTH_SHORT).show();
+        })
+                // TODO -  Show Error dialog
+        .addOnFailureListener(this, exception -> Toast
+                .makeText(MainActivity.this, MainActivity.this.getString(R.string.user_location_not_found), Toast.LENGTH_SHORT).show());
     }
 
     void hideIndicator() { this.loadingindicator.setVisibility(View.INVISIBLE); }
@@ -112,6 +128,7 @@ public class MainActivity extends AppCompatActivity implements ForecastAdapter.O
         hideIndicator();
         hideRecyclerView();
         Log.d(TAG, error.getMessage());
+        // TODO -  Show Error dialog
         runOnUiThread(() -> Toast.makeText(this, getString(R.string.error_fetching_data),Toast.LENGTH_LONG).show());
 
     }
