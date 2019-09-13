@@ -17,12 +17,15 @@ android {
         }
     }
     buildTypes {
-        build {
+        debug {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            shrinkResources true
             buildConfigField('String', "ApiKey", API_KEY)
         }
         release {
             buildConfigField('String', "ApiKey", API_KEY)
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
