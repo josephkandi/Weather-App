@@ -1,4 +1,4 @@
-package com.peruzal.wther.services;
+package com.peruzal.weather.services;
 
 import com.peruzal.weather.models.ForecastApiResponse;
 

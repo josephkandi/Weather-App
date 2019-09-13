@@ -21,7 +21,7 @@ public class WeatherService {
     static Moshi moshi = (new Moshi.Builder()).build();
     static JsonAdapter<ForecastApiResponse> jsonAdapter = moshi.adapter(ForecastApiResponse.class);
 
-    public static void fetchForecasts(double latidude, double longitude, final com.peruzal.wther.services.Response.Listener callback) {
+    public static void fetchForecasts(double latidude, double longitude, final com.peruzal.weather.services.Response.Listener callback) {
         HttpUrl httpUrl = NetworkUtils.buildWeatherForecastUrl(latidude, longitude);
         Request request = (new Request.Builder()).url(httpUrl).build();
         client.newCall(request).enqueue(new Callback() {
