@@ -1,11 +1,11 @@
 <resources>
     <string name="app_name">Wther</string>
-    <string name="current_location">Current Location</string>
-    <string name="error_fetching_data">Unable to fetch weather forecasts</string>
-    <string name="forecast_icon">Forecast icon</string>
-    <string name="location_permission_message">The app requires location permission to work</string>
-    <string name="search_menu_title">Search</string>
-    <string name="status_bar_notification_info_overflow">999+</string>
-    <string name="todo">TODO</string>
-    <string name="user_location_not_found">Unable to get your location</string>
+    <string name="current_location" translatable="false">Current Location</string>
+    <string name="error_fetching_data" translatable="false">Unable to fetch weather forecasts</string>
+    <string name="forecast_icon" translatable="false">Forecast icon</string>
+    <string name="location_permission_message" translatable="false">The app requires location permission to work</string>
+    <string name="search_menu_title" translatable="false">Search</string>
+    <string name="status_bar_notification_info_overflow" translatable="false">999+</string>
+    <string name="todo" translatable="false">TODO</string>
+    <string name="user_location_not_found" translatable="false">Unable to get your location</string>
 </resources>
