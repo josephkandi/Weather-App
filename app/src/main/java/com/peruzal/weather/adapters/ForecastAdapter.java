@@ -103,7 +103,7 @@ public class ForecastAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     @Override
     public int getItemCount() {
-        return weeklyForecast.size() == 0 ? 0 : weeklyForecast.size();
+        return weeklyForecast.size();
     }
 
     public Forecast getForecastItem(int paramInt) {
