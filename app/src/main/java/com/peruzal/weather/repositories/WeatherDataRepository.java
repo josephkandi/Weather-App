@@ -14,6 +14,7 @@ import com.peruzal.weather.models.WeatherData;
 import com.peruzal.weather.models.WeatherError;
 import com.peruzal.weather.models.WeeklyForecast;
 import com.squareup.moshi.JsonAdapter;
+import com.squareup.moshi.JsonDataException;
 import com.squareup.moshi.Moshi;
 
 import java.io.IOException;
@@ -41,7 +42,7 @@ public class WeatherDataRepository {
         this.context = context;
     }
 
-    public LiveData<WeatherData> fetchWeatherForecast(double latitude, double longitude){
+    public LiveData<WeatherData> fetchWeatherForecast(double latitude, double longitude, String units){
 
         if(!isConnected()){
             setWeatherData(NETWORK_UNAVAILABLE, null, null);
@@ -49,7 +50,7 @@ public class WeatherDataRepository {
         }
 
         Request request = new Request.Builder()
-                .url(NetworkUtils.buildWeatherForecastUrl(latitude, longitude))
+                .url(NetworkUtils.buildWeatherForecastUrl(latitude, longitude, units))
                 .build();
 
         try {
@@ -62,12 +63,17 @@ public class WeatherDataRepository {
     }
 
     private void processResponse(Response response) throws IOException {
-        ForecastApiResponse apiResponse;
-        if (response.isSuccessful() && (apiResponse = jsonAdapter.fromJson(response.body().source())) != null ) {
-            if(apiResponse.todayForecast != null || apiResponse.weeklyForecast != null){
-                setWeatherData(null, apiResponse.todayForecast, apiResponse.weeklyForecast);
-            } else {
-                setWeatherData(GENERAL_FAILURE, null, null);
+
+        if (response.isSuccessful()) {
+            try {
+                ForecastApiResponse apiResponse = jsonAdapter.fromJson(response.body().source());
+                if(apiResponse != null && (apiResponse.todayForecast != null || apiResponse.weeklyForecast != null)){
+                    setWeatherData(null, apiResponse.todayForecast, apiResponse.weeklyForecast);
+                } else {
+                    setWeatherData(GENERAL_FAILURE, null, null);
+                }
+            } catch (JsonDataException exception){
+                setWeatherData(WeatherError.JSON_DATA_PARSE_ERROR, null, null);
             }
         } else {
             setWeatherData(WeatherError.DATA_FAILURE, null, null);
