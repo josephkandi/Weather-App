@@ -17,7 +17,7 @@ public class WeatherDataViewModel extends AndroidViewModel {
         weatherDataRepository = new WeatherDataRepository(application);
     }
 
-    public LiveData<WeatherData> fetchWeatherForecast(double latitude, double longitude){
-        return weatherDataRepository.fetchWeatherForecast(latitude, longitude);
+    public LiveData<WeatherData> fetchWeatherForecast(double latitude, double longitude, String units){
+        return weatherDataRepository.fetchWeatherForecast(latitude, longitude, units);
     }
 }

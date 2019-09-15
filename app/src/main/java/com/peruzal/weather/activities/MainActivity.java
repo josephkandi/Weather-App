@@ -39,6 +39,9 @@ public class MainActivity extends AppCompatActivity implements ForecastAdapter.O
     MainActivityViewModel mainActivityViewModel;
     LocationViewModel locationViewModel;
 
+    // TODO use preference screen
+    String UNITS = "si";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -120,7 +123,7 @@ public class MainActivity extends AppCompatActivity implements ForecastAdapter.O
     }
 
     private void setupWeatherDataObserver(double latitude, double longitude) {
-        weatherDataViewModel.fetchWeatherForecast(latitude, longitude)
+        weatherDataViewModel.fetchWeatherForecast(latitude, longitude, UNITS)
                 .observe(this, weatherData -> mainActivityViewModel.setWeatherData(weatherData));
     }
 

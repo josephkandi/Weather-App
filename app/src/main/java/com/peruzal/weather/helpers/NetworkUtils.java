@@ -11,10 +11,9 @@ public class NetworkUtils {
     private static final String EXCLUDE_QUERY_VALUE = "[minutely,flags,hourly]";
     private static final String FORECAST_PATH_SEGMENT = "forecast";
     private static final String UNITS_QUERY_PARAM = "units";
-    private static final String UNITS_QUERY_VALUE = "si";
     private static final String URL_SCHEME = "https";
 
-    public static HttpUrl buildWeatherForecastUrl(double latitude, double longitude) {
+    public static HttpUrl buildWeatherForecastUrl(double latitude, double longitude, String units) {
         HttpUrl.Builder builder = (new HttpUrl.Builder())
                 .scheme(URL_SCHEME)
                 .host(BASE_API_URL)
@@ -23,7 +22,7 @@ public class NetworkUtils {
 
         builder.addEncodedPathSegment(String.format("%s,%s",  latitude, longitude))
                 .addQueryParameter(EXCLUDE_QUERY_PARAM, EXCLUDE_QUERY_VALUE)
-                .addQueryParameter(UNITS_QUERY_PARAM, UNITS_QUERY_VALUE);
+                .addQueryParameter(UNITS_QUERY_PARAM, units);
         return builder.build();
     }
 }
