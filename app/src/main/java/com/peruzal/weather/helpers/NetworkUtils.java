@@ -21,7 +21,7 @@ public class NetworkUtils {
                 .addPathSegment(FORECAST_PATH_SEGMENT)
                 .addPathSegment(Constants.API_KEY);
 
-        builder.addEncodedPathSegment(String.format("%s,%s", new Object[] { Double.valueOf(latitude), Double.valueOf(longitude) }))
+        builder.addEncodedPathSegment(String.format("%s,%s",  latitude, longitude))
                 .addQueryParameter(EXCLUDE_QUERY_PARAM, EXCLUDE_QUERY_VALUE)
                 .addQueryParameter(UNITS_QUERY_PARAM, UNITS_QUERY_VALUE);
         return builder.build();
