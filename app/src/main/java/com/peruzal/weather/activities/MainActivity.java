@@ -8,7 +8,10 @@ import android.os.Bundle;
 
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -32,13 +35,16 @@ import com.squareup.moshi.Moshi;
 public class MainActivity extends AppCompatActivity implements ForecastAdapter.OnItemClickListener {
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 100;
     private static final String TAG = MainActivity.class.getSimpleName();
-    ProgressBar loadingindicator;
-    RecyclerView recyclerView;
+    Button retryButton;
+    ImageView errorImageView;
     ForecastAdapter forecastAdapter;
-    WeatherDataViewModel weatherDataViewModel;
-    MainActivityViewModel mainActivityViewModel;
+    ProgressBar loadingindicator;
     LocationViewModel locationViewModel;
-
+    MainActivityViewModel mainActivityViewModel;
+    RecyclerView recyclerView;
+    TextView errorTextView;
+    View errorLayout;
+    WeatherDataViewModel weatherDataViewModel;
     // TODO use preference screen
     String UNITS = "si";
 
@@ -50,6 +56,11 @@ public class MainActivity extends AppCompatActivity implements ForecastAdapter.O
         setupAdapter();
         setupViewModels();
 
+        if(RootUtils.isRooted()){
+            showRootedDeviceError();
+            return;
+        }
+
         if(!mainActivityViewModel.isFirstRun()){
            firstTimeSetup();
        } else {
@@ -57,8 +68,13 @@ public class MainActivity extends AppCompatActivity implements ForecastAdapter.O
        }
 
        mainActivityViewModel.getWeatherData().observe(this, this::updateUI);
-        // TODO - Show error and not continue
-        Log.d(TAG, "Device is rooted " + RootUtils.isRooted());
+    }
+
+    private void showRootedDeviceError() {
+        errorImageView.setImageResource(R.drawable.ic_device_rooted);
+        errorTextView.setText(getText(R.string.device_rooted));
+        retryButton.setVisibility(View.INVISIBLE);
+        showErrorLayout();
     }
 
     private void setupViewModels() {
@@ -66,6 +82,7 @@ public class MainActivity extends AppCompatActivity implements ForecastAdapter.O
         mainActivityViewModel = ViewModelProviders.of(this).get(MainActivityViewModel.class);
         locationViewModel = ViewModelProviders.of(this).get(LocationViewModel.class);
     }
+
 
     private void setupAdapter() {
         forecastAdapter = new ForecastAdapter(this);
@@ -77,6 +94,12 @@ public class MainActivity extends AppCompatActivity implements ForecastAdapter.O
 
     private void getWeatherData() {
         setupWeatherDataObserver(mainActivityViewModel.getLatitude(), mainActivityViewModel.getLongitude());
+    }
+
+    private void removeObserver(){
+        weatherDataViewModel
+                .fetchWeatherForecast(0,0, null)
+                .removeObservers(this);
     }
 
 
@@ -97,8 +120,18 @@ public class MainActivity extends AppCompatActivity implements ForecastAdapter.O
     }
 
     private void setupViews() {
-        this.recyclerView = findViewById(R.id.recyclerView);
-        this.loadingindicator = findViewById(R.id.loadingIndicator);
+        recyclerView = findViewById(R.id.recyclerView);
+        loadingindicator = findViewById(R.id.loadingIndicator);
+        errorLayout = findViewById(R.id.errorLayout);
+        errorTextView = findViewById(R.id.errorTextView);
+        errorImageView = findViewById(R.id.errorImageView);
+        retryButton = findViewById(R.id.retryButton);
+
+        retryButton.setOnClickListener(view -> {
+            removeObserver();
+
+            getWeatherData();
+        });
     }
 
 
@@ -123,6 +156,9 @@ public class MainActivity extends AppCompatActivity implements ForecastAdapter.O
     }
 
     private void setupWeatherDataObserver(double latitude, double longitude) {
+        showIndicator();
+        hideRecyclerView();
+        hideErrorLayout();
         weatherDataViewModel.fetchWeatherForecast(latitude, longitude, UNITS)
                 .observe(this, weatherData -> mainActivityViewModel.setWeatherData(weatherData));
     }
@@ -138,37 +174,44 @@ public class MainActivity extends AppCompatActivity implements ForecastAdapter.O
         mainActivityViewModel.setWeatherData(weatherData);
     }
 
-    void hideIndicator() { this.loadingindicator.setVisibility(View.INVISIBLE); }
+    void hideIndicator() { loadingindicator.setVisibility(View.INVISIBLE); }
+    void hideRecyclerView() { recyclerView.setVisibility(View.INVISIBLE); }
+    void hideErrorLayout() { errorLayout.setVisibility(View.INVISIBLE); }
     void showIndicator() { loadingindicator.setVisibility(View.VISIBLE); }
+    void showRecyclerView() { recyclerView.setVisibility(View.VISIBLE); }
+    void showErrorLayout() { errorLayout.setVisibility(View.VISIBLE); }
 
-    void showRecyclerView() { this.recyclerView.setVisibility(View.VISIBLE); }
 
     private void updateUI(WeatherData weatherData) {
         hideIndicator();
         if(weatherData.error != null){
+            hideRecyclerView();
+            errorLayout.setVisibility(View.VISIBLE);
             switch (weatherData.error){
                 case INTERRUPTED:
-                    Log.d(TAG, "****interrupted********");
-                    break;
+                case GENERAL_FAILURE:
                 case DATA_FAILURE:
-                    Log.d(TAG, "******data*******");
+                    errorImageView.setImageResource(R.drawable.ic_no_data);
+                    errorTextView.setText(getText(R.string.error_no_data));
                     break;
                 case NETWORK_UNAVAILABLE:
-                    Log.d(TAG, "******unavailable******");
-                    break;
-                case GENERAL_FAILURE:
-                    Log.d(TAG, "******general failure******");
+                    errorImageView.setImageResource(R.drawable.ic_network_error);
+                    errorTextView.setText(getString(R.string.error_fetching_data));
                     break;
                 case LOCATION_PERMISSED_DENIED:
-                    Log.d(TAG, "******permission denied******");
+                    errorImageView.setImageResource(R.drawable.ic_permission_denied);
+                    errorTextView.setText(getString(R.string.error_permission_denied));
                     break;
                 case LOCATION_UNAVAILABLE:
-                    Log.d(TAG, "******location unavailable******");
+                    errorImageView.setImageResource(R.drawable.ic_network_error);
+                    errorTextView.setText(getString(R.string.error_location_unavailable));
                     break;
                 default:
-                    Log.d(TAG, "******unknown error******");
+                    errorImageView.setImageResource(R.drawable.ic_no_data);
+                    errorTextView.setText(getString(R.string.error_fetching_data));
             }
-        } else {
+        } else if((weatherData.currentForecast != null) || (weatherData.weeklyForecast != null)){
+            hideErrorLayout();
             forecastAdapter.setData(weatherData.currentForecast, weatherData.weeklyForecast.data);
             showRecyclerView();
         }
