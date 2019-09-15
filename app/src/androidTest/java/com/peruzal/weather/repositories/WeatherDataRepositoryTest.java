@@ -1,9 +1,11 @@
 package com.peruzal.weather.repositories;
 
 import android.app.Application;
+import android.content.Context;
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 import androidx.lifecycle.LifecycleOwner;
+import androidx.lifecycle.LifecycleRegistry;
 import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.rule.ActivityTestRule;
 
@@ -22,17 +24,14 @@ public class WeatherDataRepositoryTest {
     @Rule
     public InstantTaskExecutorRule taskExecutor = new InstantTaskExecutorRule();
 
-    @Rule
-    public ActivityTestRule<MainActivity> mActivityTestRule = new ActivityTestRule<>(MainActivity.class);
-
     @Test
     public void fetchWeatherForecast() {
         double latitude = -34.0833;
         double longitude = 18.85;
 
-//        WeatherDataRepository weatherDataRepository = new WeatherDataRepository((Application) InstrumentationRegistry.getInstrumentation().getContext());
-//        weatherDataRepository.fetchWeatherForecast(latitude, longitude, "si").observe(mActivityTestRule.getActivity(), weatherData -> {
-//            assert  weatherData.error == null;
-//        });
+        WeatherDataRepository weatherDataRepository = new WeatherDataRepository(mock(Application.class));
+        weatherDataRepository.fetchWeatherForecast(latitude, longitude, "si").observe(mock(LifecycleOwner.class), weatherData -> {
+            assert  weatherData.error == null;
+        });
     }
 }
