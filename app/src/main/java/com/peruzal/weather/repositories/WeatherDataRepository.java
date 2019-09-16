@@ -55,6 +55,8 @@ public class WeatherDataRepository {
 
         try {
             Response response = executorService.submit(client.newCall(request)::execute).get();
+            
+
             processResponse(response);
         } catch (InterruptedException | ExecutionException | IOException e) {
             setWeatherData(GENERAL_FAILURE, null, null);

@@ -94,8 +94,6 @@ public class MainActivity extends AppCompatActivity implements ForecastAdapter.O
 
     private void getWeatherData() {
         showIndicator();
-        hideRecyclerView();
-        hideErrorLayout();
         setupWeatherDataObserver(mainActivityViewModel.getLatitude(), mainActivityViewModel.getLongitude());
     }
 
@@ -174,19 +172,25 @@ public class MainActivity extends AppCompatActivity implements ForecastAdapter.O
         mainActivityViewModel.setWeatherData(weatherData);
     }
 
-    void hideIndicator() { loadingindicator.setVisibility(View.INVISIBLE); }
-    void hideRecyclerView() { recyclerView.setVisibility(View.INVISIBLE); }
-    void hideErrorLayout() { errorLayout.setVisibility(View.INVISIBLE); }
-    void showIndicator() { loadingindicator.setVisibility(View.VISIBLE); }
-    void showRecyclerView() { recyclerView.setVisibility(View.VISIBLE); }
-    void showErrorLayout() { errorLayout.setVisibility(View.VISIBLE); }
-
+    void showIndicator() {
+        loadingindicator.setVisibility(View.VISIBLE);
+        recyclerView.setVisibility(View.INVISIBLE);
+        errorLayout.setVisibility(View.INVISIBLE);
+    }
+    void showRecyclerView() {
+        recyclerView.setVisibility(View.VISIBLE);
+        errorLayout.setVisibility(View.INVISIBLE);
+        loadingindicator.setVisibility(View.INVISIBLE);
+    }
+    void showErrorLayout() {
+        errorLayout.setVisibility(View.VISIBLE);
+        recyclerView.setVisibility(View.INVISIBLE);
+        loadingindicator.setVisibility(View.INVISIBLE);
+    }
 
     private void updateUI(WeatherData weatherData) {
-        hideIndicator();
         if(weatherData.error != null){
-            hideRecyclerView();
-            errorLayout.setVisibility(View.VISIBLE);
+            showErrorLayout();
             switch (weatherData.error){
                 case INTERRUPTED:
                 case GENERAL_FAILURE:
@@ -211,7 +215,6 @@ public class MainActivity extends AppCompatActivity implements ForecastAdapter.O
                     errorTextView.setText(getString(R.string.error_fetching_data));
             }
         } else if((weatherData.currentForecast != null) || (weatherData.weeklyForecast != null)){
-            hideErrorLayout();
             forecastAdapter.setData(weatherData.currentForecast, weatherData.weeklyForecast.data);
             showRecyclerView();
         }
