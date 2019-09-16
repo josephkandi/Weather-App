@@ -85,7 +85,7 @@ public class MainActivity extends AppCompatActivity implements ForecastAdapter.O
 
 
     private void setupAdapter() {
-        forecastAdapter = new ForecastAdapter(this);
+        forecastAdapter = new ForecastAdapter(this, this);
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(this, LinearLayoutManager.VERTICAL);
         this.recyclerView.addItemDecoration(dividerItemDecoration);
         this.recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -93,6 +93,9 @@ public class MainActivity extends AppCompatActivity implements ForecastAdapter.O
     }
 
     private void getWeatherData() {
+        showIndicator();
+        hideRecyclerView();
+        hideErrorLayout();
         setupWeatherDataObserver(mainActivityViewModel.getLatitude(), mainActivityViewModel.getLongitude());
     }
 
@@ -156,9 +159,6 @@ public class MainActivity extends AppCompatActivity implements ForecastAdapter.O
     }
 
     private void setupWeatherDataObserver(double latitude, double longitude) {
-        showIndicator();
-        hideRecyclerView();
-        hideErrorLayout();
         weatherDataViewModel.fetchWeatherForecast(latitude, longitude, UNITS)
                 .observe(this, weatherData -> mainActivityViewModel.setWeatherData(weatherData));
     }
