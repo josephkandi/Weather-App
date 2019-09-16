@@ -7,6 +7,7 @@
     <string name="search_menu_title" translatable="false">Search</string>
     <string name="status_bar_notification_info_overflow" translatable="false">999+</string>
     <string name="todo" translatable="false">TODO</string>
+    <string name="temperature" translatable="false">%1s°</string>
     <string name="user_location_not_found" translatable="false">Unable to get your location</string>
     <string name="device_rooted">Your device seems to be rooted.</string>
     <string name="error_no_data">Weather data not available</string>
