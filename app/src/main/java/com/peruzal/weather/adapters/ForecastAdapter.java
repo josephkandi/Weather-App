@@ -1,5 +1,6 @@
 package com.peruzal.weather.adapters;
 
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -7,8 +8,6 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-
-import com.peruzal.weather.Constants;
 import com.peruzal.weather.R;
 import com.peruzal.weather.helpers.IconUtils;
 import com.peruzal.weather.models.Forecast;
@@ -21,18 +20,21 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class ForecastAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static final int WEEKLY_FORECAST_ITEM_VIEW_TYPE = 2;
     private static final int TODAY_FORECAST_VIEW_TYPE = 0;
-    static final DecimalFormat decimalFormat = new DecimalFormat("#");
-    static SimpleDateFormat simpleDateFormat = new SimpleDateFormat("E HH:MM");
-    static SimpleDateFormat weekDayFormat = new SimpleDateFormat("E");
-    TodayForecast todayForecast;
-    OnItemClickListener onItemClickListener;
-    List<Forecast> weeklyForecast = new ArrayList();
+    private Context context;
+    private static final DecimalFormat decimalFormat = new DecimalFormat("#");
+    private static SimpleDateFormat simpleDateFormat = new SimpleDateFormat("E HH:MM", Locale.getDefault());
+    private static SimpleDateFormat weekDayFormat = new SimpleDateFormat("E", Locale.getDefault());
+    private TodayForecast todayForecast;
+    private OnItemClickListener onItemClickListener;
+    private List<Forecast> weeklyForecast = new ArrayList<>();
 
-    public ForecastAdapter(OnItemClickListener onItemClickListener) {
+    public ForecastAdapter(Context context, OnItemClickListener onItemClickListener) {
+        this.context = context;
         this.onItemClickListener = onItemClickListener;
     }
 
@@ -50,24 +52,22 @@ public class ForecastAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     }
 
     private void setUpWeeklyForecastView(@NonNull WeeklyForecastViewHolder holder, int position) {
-        WeeklyForecastViewHolder dailyForecastViewHolder = holder;
         Forecast forecast = weeklyForecast.get(position);
         if (forecast != null) {
-            dailyForecastViewHolder.temperatureHigh.setText(decimalFormat.format(forecast.apparentTemperatureHigh) + Constants.DEGREES_SYMBOL);
-            dailyForecastViewHolder.temperatureLow.setText(decimalFormat.format(forecast.apparentTemperatureLow) + Constants.DEGREES_SYMBOL);
+            holder.temperatureHigh.setText(context.getString(R.string.temperature, decimalFormat.format(forecast.apparentTemperatureHigh)));
+            holder.temperatureLow.setText(context.getString(R.string.temperature, decimalFormat.format(forecast.apparentTemperatureLow)));
             Date date = new Date(forecast.time * 1000L);
-            dailyForecastViewHolder.dayOfWeek.setText(weekDayFormat.format(date));
-            int forecastIcon = IconUtils.getForecastIcon(forecast.icon);
-            dailyForecastViewHolder.icon.setImageResource(forecastIcon);
+            holder.dayOfWeek.setText(weekDayFormat.format(date));
+            int forecastResource = IconUtils.getForecastIcon(forecast.icon);
+            holder.icon.setAnimation(forecastResource);
         }
     }
 
     private void setUpTodayForecastView(@NonNull TodayForecastViewHolder holder) {
-        TodayForecastViewHolder currentlyViewHolder = holder;
         if (todayForecast != null) {
-            currentlyViewHolder.currentTemperature.setText(decimalFormat.format(this.todayForecast.temperature) + Constants.DEGREES_SYMBOL);
-            currentlyViewHolder.currentDate.setText(simpleDateFormat.format(new Date()));
-            currentlyViewHolder.summary.setText(this.todayForecast.summary);
+            holder.currentTemperature.setText(context.getString(R.string.temperature, decimalFormat.format(this.todayForecast.temperature)));
+            holder.currentDate.setText(simpleDateFormat.format(new Date()));
+            holder.summary.setText(this.todayForecast.summary);
         }
     }
 
