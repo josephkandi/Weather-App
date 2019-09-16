@@ -20,6 +20,7 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.airbnb.lottie.LottieAnimationView;
 import com.peruzal.weather.Constants;
 import com.peruzal.weather.R;
 import com.peruzal.weather.adapters.ForecastAdapter;
@@ -38,7 +39,7 @@ public class MainActivity extends AppCompatActivity implements ForecastAdapter.O
     Button retryButton;
     ImageView errorImageView;
     ForecastAdapter forecastAdapter;
-    ProgressBar loadingindicator;
+    LottieAnimationView loadingindicator;
     LocationViewModel locationViewModel;
     MainActivityViewModel mainActivityViewModel;
     RecyclerView recyclerView;
