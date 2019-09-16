@@ -1,5 +1,67 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout android:layout_width="fill_parent" android:layout_height="fill_parent"
-    xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
-    <include layout="@layout/item_forecast_header" />
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@drawable/bg_forecast_header"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/weatherIcon"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:layout_marginBottom="24dp"
+        android:scaleType="fitCenter"
+        app:layout_constraintBottom_toTopOf="@+id/currentDate"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:lottie_autoPlay="true"
+        app:lottie_loop="true" />
+
+    <TextView
+        android:id="@+id/currentTemperature"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="@style/TextAppearance.AppCompat.Display4"
+        android:textColor="#ffffffff"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="12" />
+
+    <TextView
+        android:id="@+id/currentDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:textColor="#fff"
+        app:layout_constraintBottom_toTopOf="@+id/currentTemperature"
+        app:layout_constraintEnd_toEndOf="@+id/unit"
+        app:layout_constraintStart_toStartOf="@+id/currentTemperature"
+        tools:text="Sep 9, 2019" />
+
+    <TextView
+        android:id="@+id/unit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="@style/TextAppearance.AppCompat.Display4"
+        android:textColor="#ffffffff"
+        app:layout_constraintBottom_toBottomOf="@+id/currentTemperature"
+        app:layout_constraintStart_toEndOf="@+id/currentTemperature"
+        app:layout_constraintTop_toBottomOf="@+id/currentDate"
+        app:layout_constraintVertical_bias="1.0"
+        tools:text="\u00B0" />
+
+    <TextView
+        android:id="@+id/summary"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:textColor="#fff"
+        app:layout_constraintEnd_toEndOf="@+id/unit"
+        app:layout_constraintStart_toStartOf="@+id/currentTemperature"
+        app:layout_constraintTop_toBottomOf="@+id/currentTemperature"
+        tools:text="Partly Cloudy" />
 </androidx.constraintlayout.widget.ConstraintLayout>
