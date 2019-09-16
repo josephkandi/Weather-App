@@ -17,11 +17,16 @@ import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.JsonDataException;
 import com.squareup.moshi.Moshi;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
+import okhttp3.Call;
+import okhttp3.Callback;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -32,7 +37,6 @@ import static com.peruzal.weather.models.WeatherError.NETWORK_UNAVAILABLE;
 public class WeatherDataRepository {
     private MutableLiveData<WeatherData> weatherDataMutableLiveData = new MutableLiveData<>();
     private WeatherData weatherData = new WeatherData();
-    ExecutorService executorService = Executors.newSingleThreadExecutor();
     OkHttpClient client = new OkHttpClient();
     Moshi moshi = (new Moshi.Builder()).build();
     private Context context;
@@ -53,14 +57,17 @@ public class WeatherDataRepository {
                 .url(NetworkUtils.buildWeatherForecastUrl(latitude, longitude, units))
                 .build();
 
-        try {
-            Response response = executorService.submit(client.newCall(request)::execute).get();
-            
+            client.newCall(request).enqueue(new Callback() {
+                @Override
+                public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                    setWeatherData(GENERAL_FAILURE, null, null);
+                }
 
-            processResponse(response);
-        } catch (InterruptedException | ExecutionException | IOException e) {
-            setWeatherData(GENERAL_FAILURE, null, null);
-        }
+                @Override
+                public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                    processResponse(response);
+                }
+            });
         return weatherDataMutableLiveData;
     }
 
