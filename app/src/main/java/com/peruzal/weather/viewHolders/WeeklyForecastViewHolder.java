@@ -7,13 +7,14 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.airbnb.lottie.LottieAnimationView;
 import com.peruzal.weather.R;
 import com.peruzal.weather.adapters.ForecastAdapter;
 
 
 public class WeeklyForecastViewHolder extends RecyclerView.ViewHolder {
     public TextView dayOfWeek;
-    public ImageView icon;
+    public LottieAnimationView icon;
     public TextView temperatureHigh;
     public TextView temperatureLow;
 
